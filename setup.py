@@ -7,7 +7,7 @@ setup(
   author = 'Paul Guo',
   author_email = 'cove9988@gmail.com',
   url = 'https://github.com/cove9988/print2log', # use the URL to the github repo
-  download_url = 'https://github.com/cove9988/print2log/archive/print2log.0.1.tar.gz', # I'll explain this in a second
+  download_url = 'https://github.com/cove9988/print2log/archive/print2log.0.1.tar.gz', 
   keywords = ['print', 'logging', 'recursive print'], # arbitrary keywords
   classifiers = [],
 )

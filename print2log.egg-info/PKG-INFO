@@ -1,0 +1,14 @@
+Metadata-Version: 1.2
+Name: print2log
+Version: 0.1
+Summary: using decorator, minimal change required from replace any print statement. 
+Home-page: https://github.com/cove9988/print2log
+Author: Paul Guo
+Author-email: cove9988@gmail.com
+License: UNKNOWN
+Download-URL: https://github.com/cove9988/print2log/archive/print2log.0.1.tar.gz
+Description-Content-Type: UNKNOWN
+Description: UNKNOWN
+Keywords: print,logging,recursive print
+Platform: UNKNOWN
+Requires-Python: >=3

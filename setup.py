@@ -10,4 +10,5 @@ setup(
   download_url = 'https://github.com/cove9988/print2log/archive/print2log.0.1.tar.gz', 
   keywords = ['print', 'logging', 'recursive print'], # arbitrary keywords
   classifiers = [],
+  python_requires='>=3',
 )

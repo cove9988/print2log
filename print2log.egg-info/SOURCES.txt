@@ -1,0 +1,9 @@
+README.rst
+setup.cfg
+print2log/__init__.py
+print2log/print2log.py
+print2log/unitest.py
+print2log.egg-info/PKG-INFO
+print2log.egg-info/SOURCES.txt
+print2log.egg-info/dependency_links.txt
+print2log.egg-info/top_level.txt

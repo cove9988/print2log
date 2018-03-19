@@ -19,44 +19,42 @@ import os
 import builtins
 import re
 
-'''
-define the fonts and color to print display. only test and work on win os.
-'''
-class bcolors:
+class Bcolors:
+    '''
+    define the fonts and color to print display. only test and work on win os.
+    '''
     """Sets color codes for text printing"""
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    FAILRED = '\u001b[31;1m'
-    WARNING = '\033[93m'
-    WHITET = '\033[97m'
+    OKBLUE = '\033[36m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    REDBACK = "\033[41m"
-    GREENBACK = '\033[42m'
-    YELLOWT = '\033[33m'
+    
+    def disable(self):
+        self.OKBLUE = ''
+        self.FAIL = ''
+        self.ENDC = ''        
 
 
-def color_msg(msg, level):
-    if level == 'ERROR':
-        msg = bcolors.BOLD + bcolors.FAILRED + str(msg).rstrip() + bcolors.ENDC
-    elif level == 'CRITICAL':
-        msg = bcolors.OKBLUE + str(msg).rstrip() + bcolors.ENDC
-    elif level == 'WARNING':
-        msg = bcolors.WARNING + str(msg).rstrip() + bcolors.ENDC
-    elif level == 'INFO':
-        msg = bcolors.OKGREEN + str(msg).rstrip() + bcolors.ENDC
-    elif level == 'DEBUG':
-        msg = bcolors.OKGREEN + str(msg).rstrip() + bcolors.ENDC
-    else:
-        msg = bcolors.OKGREEN + str(msg).rstrip() + bcolors.ENDC
-    return msg
+    def color_msg(self, msg, level):
+        if level == 'ERROR':
+            #msg = self.BOLD + self.FAILRED + str(msg).rstrip() + self.ENDC
+            msg = '%s ERROR: %s%s' % (self.FAIL, msg, self.ENDC)
+        elif level == 'CRITICAL':
+            msg = '%s CRITICAL: %s%s' % (self.FAIL, msg, self.ENDC)
+        elif level == 'WARNING':
+            msg = '%s WARNING:  %s%s' % (self.OKBLUE, msg, self.ENDC)
+        elif level == 'INFO':
+            msg = '%s INFO: %s%s' % (self.OKBLUE, msg, self.ENDC)
+        elif level == 'DEBUG':
+            msg = '%s DEBUG:  %s%s' % (self.OKBLUE, msg, self.ENDC)
+        else:
+            msg = '%s DEBUG:  %s%s' % (self.OKBLUE, msg, self.ENDC)
+
+        return msg.rstrip()
 
 
 def print2log(fn):
     _print = builtins.print
+    bc = Bcolors()
 
     def log(name):
         @wraps(print)
@@ -99,9 +97,15 @@ def print2log(fn):
                 level = '   '
                 logger.debug(msg)
             msg = msg.lstrip()
-            #msg =  color_msg(msg, level)
+
+            global gdisable_color
+            if gdisable_color:
+                bc.disable()
+            
+            msg = bc.color_msg(msg, level)
             #_print(msg)
-            _print('{0:10} : {1:8} => {2}'.format(name, level, msg))
+            #_print('{0:10} : {1:8} => {2}'.format(name, level, msg))
+            sys.stderr.write('{0:10} : {1:8} => {2}\n'.format(name, level, msg))
         return wrapper
 
     @wraps(fn)
@@ -110,8 +114,11 @@ def print2log(fn):
         retval = None
         builtins.print, backup = log(fn.__name__), builtins.print
         t1 = time.time()
+        global gfunction_run_time
+        global gexception_stop
         #print('info', 'start: {1} -- at : {0:%Y-%m-%d %H:%M}'.format(t1, fn.__name__))
-        print('info', ' start : {0}'.format(fn.__name__))
+        if gfunction_run_time: 
+            print('info', ' start : {0}'.format(fn.__name__))
         try:
             retval = fn(*args, **kwargs)
         except:
@@ -121,10 +128,13 @@ def print2log(fn):
             print(
                 'Error', 'func name:  {0} -- params: args: {1}  kwargs: {2}'.format(fn.__name__, args, kwargs))
             print('Error', lines)
-        t2 = time.time()
-        delta = t2 - t1
-        print('info', 'end {0}  total run time : {1:.2f} sec '.format(
-            fn.__name__, delta))
+            if gexception_stop:
+                raise
+        if gfunction_run_time: 
+            t2 = time.time()
+            delta = t2 - t1
+            print('info', 'end {0}  total run time : {1:.2f} sec '.format(
+                fn.__name__, delta))
         builtins.print = backup
         return retval
     return wrapper
@@ -185,17 +195,40 @@ def print_recursion_tree(func):
 
     return wrapper
 
-
-def log_initial(file_name, path, log_level='ERROR', exception_stop = False, formatter = '%(asctime)s : %(name)-12s - %(levelname)-8s => %(message)s' ):
+def log_initial(file_name, path, 
+                log_level='ERROR', 
+                log_formatter = '%(asctime)s : %(name)-12s - %(levelname)-8s => %(message)s',
+                print_formatter =  '%(name)-12s - %(levelname)-8s => %(message)s',
+                exception_stop = False, 
+                disable_color = False,
+                function_run_time = True):
+    '''
+    file_name: log file name without extension (.log)
+    path: log path
+    log_level: define the level and above write into log file. no effect on print on screen
+    exception_stop = True if catch exception than raise error and stop the script. False, log/print error, but continue.
+    log_formatter = print format
+    disable_color = True not print in color.
+    function_run_time = True, display each decorated function runtime
+    '''
     log_file = os.path.join(path, file_name + '.log')
     logging.basicConfig(filename=log_file,
-                        format=formatter, level=log_level)
+                        format=log_formatter, level=log_level)
     logger = logging.getLogger(file_name)
     print('Log File Location : {0}'.format(log_file))
+    global gprint_formatter , gexception_stop,gdisable_color,gfunction_run_time
+    gprint_formatter = print_formatter
+    gexception_stop= exception_stop
+    gdisable_color = disable_color
+    gfunction_run_time = function_run_time    
 
 
-# initial_logfile = log_initial('c:\\paulwork\\testing\deploy\\log\\a_error.log')
-# print_format_log = print2log
+glog_formatter= '%(asctime)s : %(name)-12s - %(levelname)-8s => %(message)s'
+gprint_formatter = '%(name)-12s - %(levelname)-8s => %(message)s'
+gexception_stop= False
+gdisable_color = False
+gfunction_run_time = True
+
 print_log = print2log
 
 if __name__ == '__main__':

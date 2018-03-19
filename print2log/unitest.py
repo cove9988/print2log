@@ -1,4 +1,4 @@
-from  print2log import print_log, log_initial, print_recursion_tree
+from print2log import log_initial, print_log, print_recursion_tree
 ################ testing ############################
 class testingA():
     @print_log
@@ -27,7 +27,8 @@ def fib(n):
 
 
 if __name__ == '__main__':
-    log_initial('inital', 'c:\\paulwork\\testing\deploy\\log')
+    
+    log_initial('inital', 'c:\\paulwork\\testing\deploy\\log', disable_color = False, function_run_time =False, exception_stop =False)
     a = testingA()
     a.my_testing('This is the first test string')
 

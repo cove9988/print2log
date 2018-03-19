@@ -1,4 +1,4 @@
-# print2log
+# print2log #
 Using decorator, minimal change required from replace any print statement. 
 
 Simple and fast use this lib to add log file from your print statement with minimal change,
@@ -10,6 +10,7 @@ and more.
 5. display a colorful print based on log_level, configurable
 
 # example #
+
 ```python
 from  print2log import print_log, log_initial, print_recursion_tree
 ################ testing ############################

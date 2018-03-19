@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'print2log',
   packages = ['print2log'], # this must be the same as the name above
-  version = '0.1',
+  version = '1.0',
   description = 'using decorator, minimal change required from replace any print statement. ',
   author = 'Paul Guo',
   author_email = 'cove9988@gmail.com',

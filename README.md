@@ -39,9 +39,10 @@ def fib(n):
         return 1
     return fib(n - 1) + fib(n - 2)
 
-
 if __name__ == '__main__':
-    log_initial('inital', 'c:\\paulwork\\testing\deploy\\log')
+    
+    log_initial('inital', 'c:\\paulwork\\testing\deploy\\log', 
+        disable_color = False, function_run_time =False, exception_stop =False)
     a = testingA()
     a.my_testing('This is the first test string')
 
